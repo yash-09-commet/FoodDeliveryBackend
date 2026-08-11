@@ -28,6 +28,10 @@ public class Customer {
         this.isActive = true;
     }
 
+    public  Customer(){
+
+    }
+
     public int getCustomerId() {
         return customerId;
     }
@@ -92,9 +96,7 @@ public class Customer {
         isActive = active;
     }
 
-    public  Customer(){
 
-    }
 
     @Override
     public String toString() {
@@ -103,7 +105,6 @@ public class Customer {
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 ", registrationDate=" + registrationDate +
                 ", isActive=" + isActive +
