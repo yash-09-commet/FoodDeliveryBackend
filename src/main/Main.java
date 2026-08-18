@@ -2,10 +2,13 @@ package main;
 
 import menu.MainMenu;
 
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
-
-        MainMenu.start();
+        Scanner sc = new Scanner(System.in);
+        MainMenu.mainMenu(sc);
+        sc.close();
     }
 }

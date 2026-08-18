@@ -3,6 +3,7 @@ import java.sql.*;
 import java.util.*;
 import model.Customer;
 import util.DatabaseConnection;
+import dao.*;
 
 public class CustomerDAO {
 
@@ -175,6 +176,8 @@ public class CustomerDAO {
         }
         return false ;
     }
+
+
 
 
 

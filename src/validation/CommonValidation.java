@@ -1,12 +1,9 @@
 package validation;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Scanner;
-import dao.CustomerDAO;
-import util.DatabaseConnection;
 
-public class customerValidation {
+import java.util.Scanner;
+
+
+public class CommonValidation {
     public static String getValidName(Scanner sc){
         while (true ){
             System.out.println(" Enter full name ");
@@ -24,7 +21,7 @@ public class customerValidation {
     }
 
 
-    public static String getValidEmail(Scanner sc , CustomerDAO customerDAO){
+    public static String getValidEmail(Scanner sc ){
             while (true) {
                 System.out.println(" Enter email ");
                 String email = sc.nextLine().trim();
@@ -36,11 +33,6 @@ public class customerValidation {
 
                 if (!email.contains("@") || !email.contains(".")) {
                     System.out.println("Invalid email format.");
-                    continue;
-                }
-
-                if (customerDAO.emailExists(email)) {
-                    System.out.println("Email already registered.");
                     continue;
                 }
 
@@ -140,6 +132,26 @@ public class customerValidation {
             return address;
         }
 
+    }
+
+    public static String getValidNonEmptyText(
+            Scanner sc,
+            String fieldName) {
+
+        while (true) {
+
+            System.out.print(fieldName + ": ");
+            String value = sc.nextLine().trim();
+
+            if (value.isEmpty()) {
+                System.out.println(
+                        fieldName + " cannot be empty."
+                );
+                continue;
+            }
+
+            return value;
+        }
     }
     }
 
