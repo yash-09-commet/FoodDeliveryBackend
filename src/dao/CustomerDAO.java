@@ -3,7 +3,7 @@ import java.sql.*;
 import java.util.*;
 import model.Customer;
 import util.DatabaseConnection;
-import dao.*;
+//import dao.*;
 
 public class CustomerDAO {
 
