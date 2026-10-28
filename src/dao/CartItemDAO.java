@@ -4,7 +4,6 @@ import model.CartItem;
 import util.DatabaseConnection;
 import java.util.*;
 import java.sql.*;
-import model.CartItem;
 
 public class CartItemDAO {
 
@@ -44,34 +43,31 @@ public class CartItemDAO {
     }
 
     public boolean clearCart(int cartId) {
+        try (Connection con = DatabaseConnection.getConnection()) {
+            return clearCart(con, cartId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-        try {
+    public boolean clearCart(Connection con, int cartId) throws SQLException {
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
 
-            String sql =
-                    "DELETE FROM cart_item " +
-                            "WHERE cartId = ?";
+        String sql = "DELETE FROM cart_item WHERE cartId = ?";
 
-            PreparedStatement ps =
-                    connection.prepareStatement(sql);
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, cartId);
 
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
 
-            ps.close();
-            connection.close();
-
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return rowsAffected > 0;
         }
 
-        return false;
+
     }
+
 
     public List<CartItem> getCartItemsByCartId(int cartId) {
 

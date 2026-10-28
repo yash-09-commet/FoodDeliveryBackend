@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 import dao.*;
 import model.*;
+import service.OrderService;
 import validation.CommonValidation;
 
 
@@ -709,8 +710,8 @@ public class CustomerMenu {
                     break;
 
                 case 4:
-                    // checkout(cartDAO, cartItemDAO, menuItemDAO, loggedInCustomer);
-                    System.out.println("Checkout - Coming next");
+                    OrderService orderService = new OrderService();
+                    orderService.checkout(loggedInCustomer.getCustomerId());
                     break;
 
                 case 5:
