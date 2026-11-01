@@ -296,7 +296,8 @@ public class CustomerMenu {
             System.out.println("4. Change Password");
             System.out.println("5. Browse Restaurant");
             System.out.println("6. My Cart");
-            System.out.println("7. Logout");
+            System.out.println("7. Order History");
+            System.out.println("8. Logout");
 
             System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
@@ -390,7 +391,10 @@ public class CustomerMenu {
                             loggedInCustomer
                     );
                     break;
-                case 7:
+                case 7 :
+                    viewOrderHistory(sc, loggedInCustomer);
+                    break;
+                case 8:
                     loggedIn = false;
                     System.out.println(" Logged out successfuly !");
                     break;
@@ -725,6 +729,198 @@ public class CustomerMenu {
         }
     }
 
+    public static void viewOrderHistory(Scanner sc, Customer loggedInCustomer) {
 
+        System.out.println();
+        System.out.println("========== MY ORDER HISTORY ==========");
+
+        OrderDAO orderDAO = new OrderDAO();
+
+        int customerId = loggedInCustomer.getCustomerId();
+
+        List<Order> orders =
+                orderDAO.getOrdersByCustomerId(customerId);
+
+        if (orders.isEmpty()) {
+            System.out.println("You haven't placed any orders yet.");
+            return;
+        }
+
+        for (Order order : orders) {
+
+            System.out.println("----------------------------------");
+
+            System.out.println("Order ID     : " + order.getOrderId());
+
+            System.out.println("Order Date   : " + order.getOrderDate());
+
+            System.out.println("Order Status : " + order.getOrderStatus());
+
+            System.out.printf(
+                    "Total Amount : ₹%.2f%n",
+                    order.getTotalAmount()
+            );
+
+            System.out.println("----------------------------------");
+        }
+        System.out.println();
+        System.out.println("1. View Order Details");
+        System.out.println("2. Cancel Order");
+        System.out.println("3. Back");
+
+        System.out.print("Enter your choice: ");
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        switch (choice) {
+
+            case 1:
+                System.out.print("Enter Order ID: ");
+                int orderId = sc.nextInt();
+                sc.nextLine();
+
+                boolean orderExists = false;
+
+                for (Order order : orders) {
+                    if (order.getOrderId() == orderId) {
+                        orderExists = true;
+                        break;
+                    }
+                }
+
+                if (orderExists) {
+                    viewOrderDetails(sc, orderId);
+                } else {
+                    System.out.println("Invalid Order ID.");
+                }
+                break;
+
+            case 2:
+                cancelCustomerOrder(sc, loggedInCustomer);
+                break;
+
+            case 3:
+                return;
+
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    public static void viewOrderDetails(Scanner sc, int orderId) {
+
+        System.out.println();
+        System.out.println("========== ORDER DETAILS ==========");
+
+        OrderDAO orderDAO = new OrderDAO();
+        MenuItemDAO menuItemDAO = new MenuItemDAO();
+
+        List<OrderItem> orderItems =
+                orderDAO.getOrderItemsByOrderId(orderId);
+
+        if (orderItems.isEmpty()) {
+            System.out.println("No items found for this order.");
+            return;
+        }
+
+        double total = 0;
+
+        for (int i = 0; i < orderItems.size(); i++) {
+
+            OrderItem orderItem = orderItems.get(i);
+
+            MenuItem menuItem =
+                    menuItemDAO.getMenuItemById(
+                            orderItem.getMenuItemId()
+                    );
+
+            if (menuItem == null) {
+                continue;
+            }
+
+            double subtotal =
+                    orderItem.getItemPrice() * orderItem.getQuantity();
+
+            total += subtotal;
+
+            System.out.println();
+            System.out.println((i + 1) + ". " + menuItem.getItemName());
+
+            System.out.println("   Quantity : " + orderItem.getQuantity());
+
+            System.out.println("   Price    : ₹" + orderItem.getItemPrice());
+
+            System.out.println("   Subtotal : ₹" + subtotal);
+        }
+
+        System.out.println("----------------------------------");
+        System.out.printf("Total Amount : ₹%.2f%n", total);
+
+
+    }
+
+    public static void cancelCustomerOrder(
+            Scanner sc,
+            Customer loggedInCustomer) {
+
+
+        OrderDAO orderDAO = new OrderDAO();
+
+        int customerId = loggedInCustomer.getCustomerId();
+
+        List<Order> orders =
+                orderDAO.getOrdersByCustomerId(customerId);
+
+        if (orders.isEmpty()) {
+            System.out.println("No orders available to cancel.");
+            return;
+        }
+
+        System.out.print("Enter Order ID to cancel: ");
+        int orderId = sc.nextInt();
+        sc.nextLine();
+
+        boolean orderExists = false;
+
+        for (Order order : orders) {
+
+            if (order.getOrderId() == orderId) {
+                orderExists = true;
+
+                System.out.println("Order Status: " + order.getOrderStatus());
+
+                break;
+            }
+        }
+
+        if (!orderExists) {
+            System.out.println("Invalid Order ID.");
+            return;
+        }
+
+        System.out.print(
+                "Are you sure you want to cancel this order? (Y/N): "
+        );
+
+        String confirmation = sc.nextLine();
+
+        if (!confirmation.equalsIgnoreCase("Y")) {
+            System.out.println("Order cancellation cancelled.");
+            return;
+        }
+
+        boolean cancelled =
+                orderDAO.cancelOrder(orderId, customerId);
+
+        if (cancelled) {
+            System.out.println("Order cancelled successfully!");
+        } else {
+            System.out.println(
+                    "Unable to cancel order. It may already be processing or completed."
+            );
+        }
+
+
+    }
 
 }
